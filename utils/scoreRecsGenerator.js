@@ -5,7 +5,7 @@ const uuidv4 = require('uuid/v4');
 const { Readable } = require('stream');
 
 // Declare Variables
-const recordsToGenerate = 1000000;
+const recordsToGenerate = 10000;
 const spinner = ora('Initializing...').start();
 
 /**
