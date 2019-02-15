@@ -8,7 +8,11 @@
     "sampleData": "node ./utils/scoreRecsGenerator.js",
     "test": "jest"
   },
-  "author": "Darryl Amour",
+  "author": "Darryl Amour <darryl.amour@gmail.com> (https://github.com/darryl-amour)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/darryl-amour/outline.git"
+  },
   "license": "MIT",
   "dependencies": {
     "ora": "^3.1.0",
