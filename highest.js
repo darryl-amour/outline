@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const fs = require('fs');
 const ora = require('ora');
 const path = require('path');
@@ -128,7 +127,6 @@ const highestScores = () => {
     // output should be correctly formatted JSON
     spinner.succeed('Completed!');
     spinner.info(JSON.stringify(recStorage.slice(0, nHighestRecs), null, 2));
-    // spinner.stop();
 
     // N highest scores processed successfully exit code 0
     return SUCCESS;
