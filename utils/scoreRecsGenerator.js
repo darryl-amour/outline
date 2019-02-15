@@ -1,13 +1,17 @@
 const fs = require('fs');
+const ora = require('ora');
 const path = require('path');
 const uuidv4 = require('uuid/v4');
+const { Readable } = require('stream');
 
-const recordsToGenerate = 1000;
-const type = ['purple', 'black'];
+// Declare Variables
+const recordsToGenerate = 1000000;
+const spinner = ora('Initializing...').start();
 
-// overwrite score_recs.data file within data folder
-const dest = fs.createWriteStream(path.resolve(__dirname, '../data/score_recs.data'));
-
+/**
+ * Higher order function used to generate unique
+ * scores
+ */
 const randomizeScore = (x) => {
   const scores = new Set();
   const seed = x;
@@ -22,27 +26,65 @@ const randomizeScore = (x) => {
   };
 };
 
+/**
+ * Readable Stream that generates sample score records
+ */
+const recordGenStream = new Readable(
+  {
+    encoding: 'utf8',
+    objectMode: true,
+    read(size) {
+      // There is a demand for data
+
+      /** Generate records */
+      spinner.text = 'Streaming score record(s)...';
+
+      // Build Record
+      this.jsonDict.id = uuidv4();
+      this.jsonDict.type = this.type[this.counter % 2];
+      this.jsonDict.y = this.counter;
+      this.jsonDict.x = this.counter + Math.ceil(Math.random() * 100);
+      this.jsonDict.payload = 'payload data'.repeat(this.counter);
+      // increment counter of records
+      this.counter += 1;
+      this.push(`${this.scoreGenerator()}: ${JSON.stringify(this.jsonDict)}\n`);
+
+      // No more records
+      if (this.counter >= recordsToGenerate) {
+        spinner.succeed('Generated score records');
+        spinner.start();
+        this.push(null);
+      }
+    },
+  },
+);
+
+/** Customize recordGenStream */
+
 // Generate unique score for each record
-const scoreGenerator = randomizeScore(recordsToGenerate);
-try {
-  // Generate records
-  for (let i = 0; i < recordsToGenerate; i += 1) {
-    const jsonDict = {};
-    const score = scoreGenerator();
+recordGenStream.scoreGenerator = randomizeScore(recordsToGenerate);
+recordGenStream.type = ['purple', 'black'];
+recordGenStream.jsonDict = {};
+recordGenStream.counter = 0;
 
-    // Build Record
-    jsonDict.id = uuidv4();
-    jsonDict.type = type[i % 2];
-    jsonDict.y = i;
-    jsonDict.x = i + Math.ceil(Math.random() * 100);
-    jsonDict.payload = 'payload data'.repeat(i);
+/**
+ * Initiate piping of sample score records from readable stream
+ * to disk.
+ */
+const createScoreRecords = () => {
+  // overwrite score_recs.data file within data folder
+  const dest = fs.createWriteStream(path.resolve(__dirname, '../data/score_recs.data'));
 
-    // write record to file
-    dest.write(`${score}: ${JSON.stringify(jsonDict)}\n`);
-  }
-} catch (err) {
-  console.error('Failed to generate score records.\n', err);
-}
+  dest.on('finish', () => {
+    spinner.succeed('Score records have been saved');
+    spinner.info(`Path: ${path.resolve(__dirname, '../data/score_recs.data')}`);
+    spinner.stop();
+  });
 
-// Cleanup
-dest.close();
+  // stream records to file
+  recordGenStream.pipe(dest);
+};
+
+createScoreRecords();
+
+module.exports = createScoreRecords;
