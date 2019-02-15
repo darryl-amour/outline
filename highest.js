@@ -1,5 +1,5 @@
 const fs = require('fs');
-const ora = require('ora');
+// const ora = require('ora');
 const path = require('path');
 const split2 = require('split2');
 const { Transform } = require('stream');
@@ -18,7 +18,7 @@ const highestScores = () => {
   const SUCCESS = 0;
 
   // Variable Declaration
-  const spinner = ora().start('Initializing');
+  // const spinner = ora().start('Initializing');
   let dataFilePath;
   const recStorage = [];
   const fileSplitRegex = /\r?\n/;
@@ -88,7 +88,7 @@ const highestScores = () => {
       throw new Error('Specified file does not exist');
     }
   } catch (err) {
-    spinner.fail('Invalid data file');
+    // spinner.fail('Invalid data file');
     process.exitCode = FILE_NOT_FOUND;
     return;
   }
@@ -98,7 +98,7 @@ const highestScores = () => {
 
 
   /** Process data File */
-  spinner.text = 'Processing data file';
+  // spinner.text = 'Processing data file';
   const dataFileStream = fs.createReadStream(dataFilePath);
   dataFileStream
     .pipe(split2(fileSplitRegex))
@@ -113,21 +113,22 @@ const highestScores = () => {
       recStorage.push(obj);
     })
     .on('error', (err) => {
-      spinner.fail(err);
+      // spinner.fail(err);
       process.exitCode = FORMATTING_ERROR;
     });
 
   dataFileStream.on('close', () => {
     // sort records
-    spinner.text = 'Sorting records';
+    // spinner.text = 'Sorting records';
     recStorage.sort((a, b) => {
       if (a.score > b.score) return -1;
       return 1;
     });
     // display requested records
     // output should be correctly formatted JSON
-    spinner.succeed('Completed!');
-    spinner.info(JSON.stringify(recStorage.slice(0, nHighestRecs), null, 2));
+    // spinner.succeed('Completed!');
+    // spinner.info(JSON.stringify(recStorage.slice(0, nHighestRecs), null, 2));
+    process.stdout.write(JSON.stringify(recStorage.slice(0, nHighestRecs), null, 2));
 
     // N highest scores processed successfully exit code 0
     process.exitCode = SUCCESS;
