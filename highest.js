@@ -89,7 +89,8 @@ const highestScores = () => {
     }
   } catch (err) {
     spinner.fail('Invalid data file');
-    return FILE_NOT_FOUND;
+    process.exitCode = FILE_NOT_FOUND;
+    return;
   }
   // Number of highest records to display expected at index 3
   // Default to single highest record if not provided
@@ -113,7 +114,7 @@ const highestScores = () => {
     })
     .on('error', (err) => {
       spinner.fail(err);
-      return FORMATTING_ERROR;
+      process.exitCode = FORMATTING_ERROR;
     });
 
   dataFileStream.on('close', () => {
@@ -129,7 +130,7 @@ const highestScores = () => {
     spinner.info(JSON.stringify(recStorage.slice(0, nHighestRecs), null, 2));
 
     // N highest scores processed successfully exit code 0
-    return SUCCESS;
+    process.exitCode = SUCCESS;
   });
 };
 
