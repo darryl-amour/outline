@@ -1,0 +1,21 @@
+{
+  "name": "outline",
+  "version": "1.0.0",
+  "description": "Program to output the N highest record IDs by score in descending order, highest score first. Output will be formated JSON.",
+  "main": "highest.js",
+  "scripts": {
+    "highest": "node highest.js ./data/score_recs.data 10",
+    "sampleData": "node ./utils/scoreRecsGenerator.js",
+    "test": "jest"
+  },
+  "author": "Darryl Amour",
+  "license": "MIT",
+  "dependencies": {
+    "ora": "^3.1.0",
+    "split2": "^3.1.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "jest": "^24.1.0"
+  }
+}
